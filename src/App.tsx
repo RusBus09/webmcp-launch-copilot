@@ -22,6 +22,7 @@ import {
 import './App.css'
 import { useLaunchCopilot, type OutreachDraft, type TaskStatus } from './hooks/useLaunchCopilot'
 import { useWebMCP } from './tools/useWebMCP'
+import Showcase from './Showcase'
 
 const statusLabels: Record<TaskStatus, string> = {
   todo: 'Queued',
@@ -135,6 +136,8 @@ function App() {
 
   return (
     <div className="app-shell">
+      <Showcase />
+      <div className="console" id="console">
       <header className="topbar">
         <a className="brand" href="#top" aria-label="Launch Copilot home">
           <span className="brand-mark"><Gamepad2 size={19} /></span>
@@ -354,6 +357,7 @@ function App() {
         <span><span className="footer-pulse" /> Launch state synced in this session</span>
         <span>Agent drafts. Human confirms.</span>
       </footer>
+      </div>
 
       {pendingDraft && (
         <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && launch.cancelSendConfirmation()}>
