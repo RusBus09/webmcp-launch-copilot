@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowDown, ArrowUpRight, Bot, ShieldCheck } from 'lucide-react'
 import { useScrollDirector } from './useScrollDirector'
 import { ArtifactTurntable } from './ArtifactTurntable'
+import heroMonolithStill from './assets/hero-monolith.png'
+import ledgerStill from './assets/artifact-ledger.png'
+import signalStill from './assets/artifact-signal.png'
+import envoyStill from './assets/artifact-envoy.png'
 import './showcase.css'
 
 const artifacts = [
@@ -107,7 +111,7 @@ export default function Showcase() {
 
       <section className="hero" aria-label="Introduction" data-lead>
         <div className="hero__media" aria-hidden="true">
-          <ArtifactTurntable kind="monolith" className="hero__gl" />
+          <ArtifactTurntable kind="monolith" className="hero__gl" fallbackImage={heroMonolithStill} />
           <div className="hero__media-haze" />
         </div>
         <div className="hero__inner">
@@ -219,7 +223,12 @@ export default function Showcase() {
           >
             <div className="cabinet__stage">
               <div className="cabinet__media">
-                <ArtifactTurntable kind={artifact.kind} />
+                <ArtifactTurntable
+                  kind={artifact.kind}
+                  fallbackImage={
+                    artifact.kind === 'ledger' ? ledgerStill : artifact.kind === 'signal' ? signalStill : envoyStill
+                  }
+                />
               </div>
               <div className="cabinet__panel">
                 <p className="manifesto__kicker">the collection · {artifact.roman}</p>
