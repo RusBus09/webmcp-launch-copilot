@@ -1,17 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowDown, ArrowUpRight, Bot, ShieldCheck } from 'lucide-react'
 import { useScrollDirector } from './useScrollDirector'
-import heroMonolithPoster from './assets/hero-monolith.png'
-import turntableMonolith from './assets/turntable/monolith.mp4'
-import turntableLedger from './assets/turntable/ledger.mp4'
-import turntableSignal from './assets/turntable/signal.mp4'
-import turntableEnvoy from './assets/turntable/envoy.mp4'
+import { ArtifactTurntable } from './ArtifactTurntable'
 import './showcase.css'
 
 const artifacts = [
   {
     id: 'ledger',
-    video: turntableLedger,
+    kind: 'ledger' as const,
     roman: 'The Ledger',
     italic: 'launch checklist',
     description:
@@ -20,7 +16,7 @@ const artifacts = [
   },
   {
     id: 'signal',
-    video: turntableSignal,
+    kind: 'signal' as const,
     roman: 'The Signal',
     italic: 'store readiness',
     description:
@@ -29,7 +25,7 @@ const artifacts = [
   },
   {
     id: 'envoy',
-    video: turntableEnvoy,
+    kind: 'envoy' as const,
     roman: 'The Envoy',
     italic: 'press outreach',
     description:
@@ -77,60 +73,27 @@ export default function Showcase() {
   const [loadProgress, setLoadProgress] = useState(0)
   const [loaded, setLoaded] = useState(false)
 
-  // Preload gate: reel metadata + hero poster drive the counter, then curtain lifts.
+  // Intro gate: fonts + a fixed choreography beat. WebGL scenes are
+  // procedural, nothing to preload. Keeps the loader without hostage-taking.
   useEffect(() => {
-    const videos = [
-      turntableMonolith,
-      turntableLedger,
-      turntableSignal,
-      turntableEnvoy,
-    ] as string[]
-    let live = 0
-    let cancelled = false
-    const total = videos.length + 1
-
-    const tick = () => {
-      if (cancelled) return
-      setLoadProgress((p) => {
-        const target = Math.min(100, ((live + 1) / total) * 100)
-        return p + (target - p) * 0.3
-      })
-    }
-    const timer = window.setInterval(tick, 120)
-
-    const onVideo = () => {
-      live += 1
-    }
-    videos.forEach((src) => {
-      const v = document.createElement('video')
-      v.preload = 'metadata'
-      v.muted = true
-      v.onloadedmetadata = onVideo
-      v.src = src
-    })
-    const hero = new Image()
-    hero.onload = onVideo
-    hero.src = heroMonolithPoster
-
-    // Hard ceiling: never hold the page hostage for slow media.
-    const failSafe = window.setTimeout(() => setLoaded(true), 2500)
-    const finish = window.setInterval(() => {
-      setLoadProgress((p) => {
-        if (p >= 99.5) {
-          window.clearInterval(finish)
-          window.clearInterval(timer)
-          window.clearTimeout(failSafe)
-          setLoaded(true)
-          return 100
-        }
-        return p
-      })
-    }, 240)
-
-    return () => {
-      cancelled = true
+    const start = performance.now()
+    const timer = window.setInterval(() => {
+      const target = Math.min(100, ((performance.now() - start) / 1500) * 100)
+      setLoadProgress((p) => p + (target - p) * 0.35)
+    }, 100)
+    const finish = window.setTimeout(() => {
       window.clearInterval(timer)
-      window.clearInterval(finish)
+      setLoadProgress(100)
+      setLoaded(true)
+    }, 1600)
+    // never hold the page hostage if the tab was backgrounded etc.
+    const failSafe = window.setTimeout(() => {
+      window.clearInterval(timer)
+      setLoaded(true)
+    }, 3000)
+    return () => {
+      window.clearInterval(timer)
+      window.clearTimeout(finish)
       window.clearTimeout(failSafe)
     }
   }, [])
@@ -144,15 +107,7 @@ export default function Showcase() {
 
       <section className="hero" aria-label="Introduction" data-lead>
         <div className="hero__media" aria-hidden="true">
-          <video
-            data-reel
-            src={turntableMonolith}
-            poster={heroMonolithPoster}
-            muted
-            playsInline
-            preload="auto"
-            disablePictureInPicture
-          />
+          <ArtifactTurntable kind="monolith" className="hero__gl" />
           <div className="hero__media-haze" />
         </div>
         <div className="hero__inner">
@@ -264,14 +219,7 @@ export default function Showcase() {
           >
             <div className="cabinet__stage">
               <div className="cabinet__media">
-                <video
-                  data-reel
-                  src={artifact.video}
-                  muted
-                  playsInline
-                  preload="metadata"
-                  disablePictureInPicture
-                />
+                <ArtifactTurntable kind={artifact.kind} />
               </div>
               <div className="cabinet__panel">
                 <p className="manifesto__kicker">the collection · {artifact.roman}</p>

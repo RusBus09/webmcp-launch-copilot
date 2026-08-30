@@ -74,12 +74,9 @@
   isolation: isolate;
 }
 .hero__media { position: absolute; inset: 0; z-index: -1; }
-.hero__media video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 68%;
-  opacity: 0.95;
+.hero__media .hero__gl {
+  position: absolute;
+  inset: 0;
   transform: scale(calc(1 + var(--lead-progress, 0) * 0.16))
     translateY(calc(var(--lead-progress, 0) * -3.5vh));
   will-change: transform;
@@ -305,18 +302,14 @@
   border-radius: 6px;
   overflow: hidden;
   border: 1px solid var(--g-line);
-  background: #070707;
+  background: radial-gradient(120% 100% at 50% 0%, #0e0c09 0%, #070707 58%, #050505 100%);
   box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
+  aspect-ratio: 1;
   transform: scale(calc(0.88 + var(--reveal-progress, 0) * 0.12));
   will-change: transform;
 }
-.cabinet__media video {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  display: block;
-  filter: saturate(1.02);
-}
+.cabinet__media canvas { display: block; width: 100%; height: 100%; }
+.gl-fill { position: absolute; inset: 0; }
 .cabinet__panel { display: grid; gap: 18px; justify-items: start; padding: 0 2vw; }
 .cabinet__panel .manifesto__kicker {
   transform: translateY(calc((1 - var(--reveal-progress, 0)) * 26px));
@@ -549,7 +542,7 @@
   [data-reveal] { opacity: 1; transform: none; transition: none; }
   .w__inner { transform: none; transition: none; }
   .cabinet__step { clip-path: none; }
-  .hero__media video, .hero__inner, .cabinet__media, .cabinet__panel :is(p, h3, div) { transform: none; }
+  .hero__media .hero__gl, .hero__inner, .cabinet__media, .cabinet__panel :is(p, h3, div) { transform: none; }
   .cabinet__panel :is(p, h3, div) { opacity: 1; }
   .coin { transform: none; }
 }
